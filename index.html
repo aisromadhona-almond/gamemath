@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎲 Game Peluang & Statistika — Belajar Sambil Main!</title>
+<style>
+:root{
+  --bg:#fff6fa;
+  --ink:#4a3a56;
+  --muted:#9b8aab;
+  --faint:#c4b8d4;
+  --card:#ffffff;
+  --border:#f6e4ef;
+  --pink:#ff7eb6; --pink-d:#e0559a; --pink-soft:#ffe3f1;
+  --purple:#b388ff; --purple-d:#8f63e8; --purple-soft:#efe6ff;
+  --mint:#5fd6b2; --mint-soft:#dcf8ee;
+  --sky:#6fb7ff; --sky-soft:#e2f0ff;
+  --sun:#ffc95e; --sun-soft:#fff1d6;
+  --peach:#ffab8a;
+  --green:#4ecb8d;
+  --red:#ff7b8a;
+  --shadow:0 6px 0 rgba(224,85,154,.14), 0 14px 30px rgba(160,90,180,.10);
+  --r:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.55;
+  background-image:radial-gradient(#ffd9ec 1.6px,transparent 1.7px),radial-gradient(#e4d7ff 1.6px,transparent 1.7px);
+  background-size:44px 44px,44px 44px;background-position:0 0,22px 22px;
+}
+.wrap{max-width:960px;margin:0 auto;padding:22px 16px 70px}
+
+/* ===== header ===== */
+header{
+  text-align:center;margin-bottom:26px;padding:34px 20px 30px;border-radius:28px;
+  background:linear-gradient(135deg,#ffe0ef 0%,#efe4ff 55%,#dff4ff 100%);
+  border:3px solid #fff;box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+header .deco{position:absolute;font-size:34px;opacity:.85;animation:floaty 3.4s ease-in-out infinite}
+header .d1{top:14px;left:22px}header .d2{top:18px;right:26px;animation-delay:.7s}
+header .d3{bottom:12px;left:36px;animation-delay:1.2s;font-size:26px}
+header .d4{bottom:16px;right:40px;animation-delay:.4s;font-size:26px}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-9px) rotate(8deg)}}
+.badge{
+  display:inline-block;background:#fff;color:var(--pink-d);border:2px solid #ffd2e8;
+  font-size:13px;font-weight:800;padding:6px 16px;border-radius:999px;margin-bottom:12px;
+  box-shadow:0 3px 0 #ffd2e8;
+}
+header h1{font-size:clamp(26px,5vw,38px);font-weight:800;letter-spacing:-.5px}
+header h1 .wave{display:inline-block;animation:wave 2.2s ease-in-out infinite;transform-origin:70% 70%}
+@keyframes wave{0%,60%,100%{transform:rotate(0)}10%{transform:rotate(16deg)}30%{transform:rotate(-8deg)}}
+header p{color:#7a6a8f;font-size:15px;margin-top:8px;max-width:540px;margin-inline:auto;font-weight:500}
+
+/* ===== tabs ===== */
+.tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+.tab{
+  border:2.5px solid var(--border);background:#fff;color:var(--muted);
+  border-radius:999px;padding:10px 22px;cursor:pointer;font-size:15.5px;font-weight:800;
+  transition:all .16s cubic-bezier(.34,1.56,.64,1);font-family:inherit;
+  box-shadow:0 4px 0 var(--border);
+}
+.tab:hover{transform:translateY(-3px) rotate(-1deg);color:var(--pink-d);border-color:#ffc7e2;box-shadow:0 7px 0 #ffc7e2}
+.tab.on{background:var(--pink);border-color:var(--pink-d);color:#fff;box-shadow:0 5px 0 var(--pink-d);transform:translateY(-2px)}
+
+/* ===== cards & controls ===== */
+.card{background:var(--card);border:3px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--shadow)}
+.card.pink{border-color:#ffd2e8}.card.purple{border-color:#ddccff}.card.mint{border-color:#bfeee0}.card.sky{border-color:#c8e4ff}
+.hint{font-size:14px;color:var(--muted);margin:0 0 14px;font-weight:500}
+.lbl{font-size:13px;color:var(--muted);margin:0 0 6px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;font-size:12px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--pink);color:#fff;border:none;border-radius:16px;
+  padding:12px 24px;font-size:15.5px;font-weight:800;cursor:pointer;font-family:inherit;
+  box-shadow:0 5px 0 var(--pink-d);transition:all .14s cubic-bezier(.34,1.56,.64,1);
+}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 7px 0 var(--pink-d)}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--pink-d)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.purpleb{background:var(--purple);box-shadow:0 5px 0 var(--purple-d)}
+.btn.purpleb:hover:not(:disabled){box-shadow:0 7px 0 var(--purple-d)}
+.btn.purpleb:active:not(:disabled){box-shadow:0 1px 0 var(--purple-d)}
+.btn.ghost{background:#fff;color:var(--ink);border:2.5px solid var(--border);box-shadow:0 4px 0 var(--border)}
+.btn.ghost:hover:not(:disabled){border-color:#ffc7e2;color:var(--pink-d);box-shadow:0 6px 0 #ffc7e2;transform:translateY(-2px)}
+.btn.ghost:active:not(:disabled){box-shadow:0 1px 0 #ffc7e2;transform:translateY(2px)}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:stretch}
+.row>.card{flex:1;min-width:272px}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.stats{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:16px}
+.stat{background:#fdf7fc;border:2px dashed #f0dcee;border-radius:16px;padding:10px 16px;min-width:88px}
+.stat b{font-size:25px;font-weight:800;line-height:28px;display:block}
+.stat span{font-size:11.5px;color:var(--muted);font-weight:600}
+.guess{width:50px;height:50px;border:2.5px solid var(--border);border-radius:12px;background:#fff;cursor:pointer;padding:4px;transition:all .16s cubic-bezier(.34,1.56,.64,1);box-shadow:0 3px 0 var(--border)}
+.guess:hover{transform:translateY(-3px) rotate(-4deg);border-color:#ffc7e2}
+.guess.on{border-color:var(--pink);background:var(--pink-soft);transform:translateY(-2px);box-shadow:0 3px 0 var(--pink-d)}
+.fb{font-size:15px;font-weight:700;min-height:24px;margin-top:14px}
+.fb.ok{color:#2fae72}.fb.no{color:#ef5b74}
+.fb.pop{animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.shake{animation:shake .5s ease}
+@keyframes shake{0%{transform:rotate(0)}20%{transform:rotate(-16deg)}45%{transform:rotate(14deg)}70%{transform:rotate(-9deg)}100%{transform:rotate(0)}}
+.spin{animation:flip .55s ease}
+@keyframes flip{0%{transform:rotateX(0)}100%{transform:rotateX(720deg)}}
+.qopt{
+  display:block;width:100%;text-align:left;border:2.5px solid var(--border);background:#fff;
+  color:var(--ink);border-radius:16px;padding:14px 18px;font-size:15.5px;cursor:pointer;margin-bottom:10px;
+  transition:all .15s cubic-bezier(.34,1.56,.64,1);font-family:inherit;font-weight:700;box-shadow:0 3px 0 var(--border);
+}
+.qopt:hover:not(:disabled){border-color:var(--purple);background:var(--purple-soft);transform:translateX(5px);box-shadow:0 3px 0 #ddccff}
+.qopt:disabled{cursor:default}
+.qopt.ok{border-color:var(--green);background:#e3f9ee;color:#1d9e63;box-shadow:0 3px 0 #9fe4c2}
+.qopt.no{border-color:var(--red);background:#ffe9ec;color:#e0455f;box-shadow:0 3px 0 #ffb9c4;animation:wiggle .4s ease}
+@keyframes wiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.expl{font-size:14px;color:#7a6a8f;background:var(--sun-soft);border:2px dashed #ffdf9e;border-radius:14px;padding:13px 15px;line-height:1.6;margin:12px 0 16px}
+.expl b{color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--pink);height:30px;cursor:pointer}
+svg{display:block}
+.coinwrap{text-align:center}
+.chiprow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+footer{text-align:center;color:var(--faint);font-size:13px;margin-top:34px;font-weight:600}
+.panel{display:none}
+.panel.on{display:block;animation:fadein .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes fadein{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.scorebig{font-size:52px;font-weight:800;line-height:1.05;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.progress{height:12px;background:#f4e9f4;border-radius:999px;overflow:hidden;margin-bottom:16px;border:2px solid var(--border)}
+.progress>div{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:999px;transition:width .35s cubic-bezier(.34,1.56,.64,1)}
+.bigemoji{font-size:46px;display:block;margin-bottom:6px;animation:floaty 3s ease-in-out infinite}
+.confetti{position:fixed;top:-12px;z-index:99;pointer-events:none;border-radius:3px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(108vh) rotate(720deg);opacity:.9}}
+@media(max-width:520px){.stat{min-width:76px;padding:8px 12px}.stat b{font-size:21px}}
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="deco d1">🎲</span><span class="deco d2">🪙</span><span class="deco d3">📊</span><span class="deco d4">✨</span>
+  <span class="badge">🍓 Media & Bahan Ajar Matematika</span>
+  <h1>Game Peluang &amp; Statistika <span class="wave">👋</span></h1>
+  <p>Belajar sambil main! Tebak dadu, lempar koin, jadi detektif data, lalu uji pemahamanmu di kuis. 🌈</p>
+</header>
+
+<nav class="tabs" aria-label="Pilih permainan">
+  <button class="tab on" data-p="dadu">🎲 Dadu</button>
+  <button class="tab" data-p="koin">🪙 Koin</button>
+  <button class="tab" data-p="stat">📊 Statistik</button>
+  <button class="tab" data-p="kuis">⭐ Kuis</button>
+</nav>
+
+<!-- ================= DADU ================= -->
+<section class="panel on" id="p-dadu">
+  <p class="hint">🎯 Tebak angka dadu, lalu lempar! Bandingkan peluang <b>empiris</b> (hasil percobaan) dengan peluang <b>teoretis</b> 1/6.</p>
+  <div class="row">
+    <div class="card pink">
+      <div id="diceBig" style="width:112px;height:112px;margin-bottom:14px;"></div>
+      <p class="lbl">🍭 Tebakanmu (1–6)</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;" id="guessRow"></div>
+      <button class="btn" id="btnRoll">🎲 Lempar dadu!</button>
+      <div class="fb" id="diceFb"></div>
+    </div>
+    <div class="card purple" style="flex:1.3">
+      <div class="stats">
+        <div class="stat"><b class="num" id="dThrows">0</b><span>🎲 lemparan</span></div>
+        <div class="stat"><b class="num" id="dWins">0</b><span>🎯 tepat</span></div>
+        <div class="stat"><b class="num" id="dFreq">–</b><span>📈 peluang empiris</span></div>
+        <div class="stat"><b class="num">1/6</b><span>📐 teoretis</span></div>
+      </div>
+      <p class="lbl">📊 Frekuensi tiap angka (putus-putus = harapan N/6)</p>
+      <svg id="diceChart" viewBox="0 0 320 152" style="width:100%"></svg>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KOIN ================= -->
+<section class="panel" id="p-koin">
+  <p class="hint">🪙 Lempar koin berkali-kali dan saksikan <b>hukum bilangan besar</b>: frekuensi relatif makin mendekati 1/2.</p>
+  <div class="row">
+    <div class="card mint coinwrap">
+      <div id="coin" style="width:104px;height:104px;margin:0 auto 6px;"></div>
+      <div class="chiprow">
+        <button class="btn" id="flip1">🪙 1×</button>
+        <button class="btn ghost" id="flip10">10×</button>
+        <button class="btn purpleb" id="flip100">100× ✨</button>
+        <button class="btn ghost" id="coinReset">🔄</button>
+      </div>
+      <div class="stats" style="justify-content:center;margin-bottom:0">
+        <div class="stat"><b class="num" id="cA">0</b><span>😊 angka (A)</span></div>
+        <div class="stat"><b class="num" id="cG">0</b><span>🌸 gambar (G)</span></div>
+        <div class="stat"><b class="num" id="cN">0</b><span>🔢 total</span></div>
+        <div class="stat"><b class="num" id="cP">–</b><span>📊 fr. relatif A</span></div>
+      </div>
+    </div>
+    <div class="card sky" style="flex:1.4">
+      <p class="lbl">📈 Proporsi "angka" seiring lemparan (garis = 0,5)</p>
+      <svg id="coinChart" viewBox="0 0 320 162" style="width:100%"></svg>
+      <p class="hint" id="coinNote" style="margin:10px 0 0">Belum ada lemparan — coba pencet 100×! 👆</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATISTIK ================= -->
+<section class="panel" id="p-stat">
+  <p class="hint">🕵️‍♀️ Jadi detektif data! Lihat diagram titik nilai ulangan 7 siswa, geser slider untuk menebak <b>rata-ratanya</b>.</p>
+  <div class="row">
+    <div class="card purple" style="flex:1.4">
+      <svg id="dotChart" viewBox="0 0 320 152" style="width:100%;margin-bottom:12px"></svg>
+      <p class="lbl">📋 Data nilai</p>
+      <p class="num" id="statData" style="font-size:18px;font-weight:800;color:var(--ink)"></p>
+      <p class="hint" style="margin:6px 0 0">Banyak data = 7 siswa. Setelah cek jawaban, lihat juga mediannya ya! 💡</p>
+    </div>
+    <div class="card pink">
+      <p class="lbl">🎚️ Tebakan rata-rata</p>
+      <p class="num" id="guessVal" style="font-size:34px;font-weight:800;color:var(--pink-d);line-height:1.1;margin-bottom:4px">5,5</p>
+      <input type="range" id="meanSlider" min="1" max="10" step="0.5" value="5.5" aria-label="Tebakan rata-rata">
+      <div style="display:flex;gap:8px;margin:18px 0;flex-wrap:wrap">
+        <button class="btn" id="btnCheck">✅ Cek jawaban</button>
+        <button class="btn ghost" id="btnNewData">🎲 Data baru</button>
+      </div>
+      <div id="statFb"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KUIS ================= -->
+<section class="panel" id="p-kuis">
+  <p class="hint">⭐ 5 soal seru tentang peluang &amp; statistika. Jawaban langsung dikoreksi beserta penjelasannya!</p>
+  <div class="card" id="quizCard" style="max-width:600px;margin:0 auto"></div>
+</section>
+
+<footer>dibuat dengan 💜 untuk pembelajaran matematika · peluang &amp; statistika 🎀</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var CS=getComputedStyle(document.documentElement);
+function col(n){return CS.getPropertyValue(n).trim()}
+var PINK='#ff7eb6',PURPLE='#b388ff',MINT='#5fd6b2',SKY='#6fb7ff',SUN='#ffc95e',PEACH='#ffab8a',INK='#4a3a56',MUT='#9b8aab',FNT='#c4b8d4',BORD='#f6e4ef';
+
+/* ---------- confetti ---------- */
+var CCOL=[PINK,PURPLE,MINT,SKY,SUN,PEACH];
+function confetti(x,y,n){
+  n=n||26;
+  for(var i=0;i<n;i++){
+    var d=document.createElement('div');
+    d.className='confetti';
+    var s=6+Math.random()*7;
+    d.style.cssText='left:'+(x+(Math.random()-.5)*160)+'px;width:'+s+'px;height:'+(s*(0.6+Math.random()))+'px;background:'+CCOL[i%CCOL.length]+';animation-duration:'+(0.9+Math.random()*0.9)+'s;animation-delay:'+(Math.random()*0.25)+'s;border-radius:'+(Math.random()<.5?'50%':'3px');
+    document.body.appendChild(d);
+    (function(el){setTimeout(function(){el.remove()},2200)})(d);
+  }
+}
+function boom(el){var r=el.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2,30)}
+
+/* ---------- tabs ---------- */
+var tabs=document.querySelectorAll('.tab');
+tabs.forEach(function(t){
+  t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.remove('on')});
+    t.classList.add('on');
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on')});
+    $('p-'+t.dataset.p).classList.add('on');
+  });
+});
+
+/* ---------- dice ---------- */
+var PIPS={1:[[50,50]],2:[[28,28],[72,72]],3:[[28,28],[50,50],[72,72]],4:[[28,28],[72,28],[28,72],[72,72]],5:[[28,28],[72,28],[50,50],[28,72],[72,72]],6:[[28,24],[72,24],[28,50],[72,50],[28,76],[72,76]]};
+var DCOL={1:PINK,2:PEACH,3:SUN,4:SKY,5:PURPLE,6:MINT};
+function diceSVG(v,s){
+  var p=PIPS[v].map(function(c){return '<circle cx="'+c[0]+'" cy="'+c[1]+'" r="10" fill="'+DCOL[v]+'"/>'}).join('');
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 100 100"><rect x="3" y="3" width="94" height="94" rx="22" fill="#ffffff" stroke="'+BORD+'" stroke-width="3"/>'+p+'</svg>';
+}
+var guess=1,throws=0,wins=0,dist=[0,0,0,0,0,0];
+var gr=$('guessRow');
+for(var i=1;i<=6;i++){
+  (function(v){
+    var b=document.createElement('button');
+    b.className='guess'+(v===1?' on':'');
+    b.setAttribute('aria-label','Tebak angka '+v);
+    b.innerHTML=diceSVG(v,38);
+    b.addEventListener('click',function(){
+      guess=v;
+      gr.querySelectorAll('.guess').forEach(function(x){x.classList.remove('on')});
+      b.classList.add('on');
+    });
+    gr.appendChild(b);
+  })(i);
+}
+$('diceBig').innerHTML=diceSVG(6,112);
+function drawDiceChart(){
+  var s='<line x1="28" y1="128" x2="314" y2="128" stroke="'+FNT+'" stroke-width="2" stroke-linecap="round"/>';
+  var maxc=Math.max.apply(null,dist.concat([1]));
+  for(var v=1;v<=6;v++){
+    var h=dist[v-1]/maxc*104, x=28+(v-1)*48+10;
+    s+='<rect x="'+x+'" y="'+(128-h)+'" width="28" height="'+Math.max(h,2)+'" rx="8" fill="'+DCOL[v]+'"/>';
+    if(dist[v-1]>0)s+='<text x="'+(x+14)+'" y="'+(120-h)+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+MUT+'" class="num">'+dist[v-1]+'</text>';
+    s+='<text x="'+(x+14)+'" y="147" text-anchor="middle" font-size="12" font-weight="700" fill="'+MUT+'" class="num">'+v+'</text>';
+  }
+  if(throws>0){
+    var ey=128-(throws/6)/maxc*104;
+    s+='<line x1="28" y1="'+ey+'" x2="314" y2="'+ey+'" stroke="'+FNT+'" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round"/>';
+  }
+  $('diceChart').innerHTML=s;
+}
+drawDiceChart();
+$('btnRoll').addEventListener('click',function(){
+  var el=$('diceBig');
+  el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');
+  var v=1+Math.floor(Math.random()*6);
+  setTimeout(function(){$('diceBig').innerHTML=diceSVG(v,112)},200);
+  throws++;dist[v-1]++;
+  var fb=$('diceFb');
+  if(v===guess){
+    wins++;fb.textContent='🎉 Tepat! Dadu menunjukkan '+v+'. +1 poin!';fb.className='fb ok pop';
+    boom(el);
+  }else{
+    fb.textContent='😅 Meleset! Dadu = '+v+', tebakanmu = '+guess+'. Coba lagi!';fb.className='fb no pop';
+  }
+  setTimeout(function(){fb.classList.remove('pop')},420);
+  $('dThrows').textContent=throws;
+  $('dWins').textContent=wins;
+  $('dFreq').textContent=(wins/throws).toFixed(3).replace('.',',');
+  drawDiceChart();
+});
+
+/* ---------- coin ---------- */
+var cA=0,cG=0,hist=[];
+function coinSVG(side){
+  var eyes=side==='A'
+    ?'<circle cx="38" cy="44" r="4.5" fill="'+INK+'"/><circle cx="62" cy="44" r="4.5" fill="'+INK+'"/>'
+    :'<path d="M33 43 q5 -6 10 0" stroke="'+INK+'" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M57 43 q5 -6 10 0" stroke="'+INK+'" stroke-width="3.5" fill="none" stroke-linecap="round"/>';
+  return '<svg width="104" height="104" viewBox="0 0 100 100">'
+    +'<circle cx="50" cy="50" r="46" fill="'+SUN+'" stroke="#f0a93c" stroke-width="3"/>'
+    +'<circle cx="50" cy="50" r="37" fill="none" stroke="#f0a93c" stroke-width="2.5" stroke-dasharray="5 6"/>'
+    +eyes
+    +'<circle cx="31" cy="55" r="4.5" fill="#ff9db0" opacity=".75"/><circle cx="69" cy="55" r="4.5" fill="#ff9db0" opacity=".75"/>'
+    +'<path d="M41 58 q9 9 18 0" stroke="'+INK+'" stroke-width="3.5" fill="none" stroke-linecap="round"/>'
+    +'</svg>';
+}
+$('coin').innerHTML=coinSVG('A');
+function drawCoinChart(){
+  var py=function(p){return 132-p*112};
+  var s='';
+  [0,0.5,1].forEach(function(g){
+    s+='<line x1="36" y1="'+py(g)+'" x2="310" y2="'+py(g)+'" stroke="'+(g===0.5?FNT:BORD)+'" stroke-width="'+(g===0.5?2:2)+'" '+(g===0.5?'stroke-dasharray="5 5"':'stroke-linecap="round"')+'/>';
+    s+='<text x="30" y="'+(py(g)+4)+'" text-anchor="end" font-size="10" font-weight="700" fill="'+MUT+'" class="num">'+(g+'').replace('.',',')+'</text>';
+  });
+  if(hist.length>1){
+    var st=Math.max(1,Math.floor(hist.length/300));
+    var pts=[];
+    for(var i=0;i<hist.length;i+=st){pts.push((36+i*(274/Math.max(hist.length-1,1))).toFixed(1)+','+py(hist[i]).toFixed(1))}
+    pts.push('310,'+py(hist[hist.length-1]).toFixed(1));
+    s+='<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+PINK+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+    s+='<circle cx="310" cy="'+py(hist[hist.length-1]).toFixed(1)+'" r="5" fill="'+PURPLE+'" stroke="#fff" stroke-width="2"/>';
+  }
+  $('coinChart').innerHTML=s;
+}
+function updCoin(){
+  $('cA').textContent=cA;$('cG').textContent=cG;
+  var n=cA+cG;$('cN').textContent=n;
+  $('cP').textContent=n?(cA/n).toFixed(3).replace('.',','):'–';
+  $('coinNote').textContent=n===0?'Belum ada lemparan — coba pencet 100×! 👆':'Terakhir: proporsi A = '+(cA/n).toFixed(3).replace('.',',')+' setelah '+n+' lemparan — makin dekat ke 0,5 kan? 🌟';
+}
+function doFlip(n,animate){
+  for(var i=0;i<n;i++){if(Math.random()<0.5)cA++;else cG++;hist.push(cA/(cA+cG))}
+  if(animate){
+    var el=$('coin');el.classList.remove('spin');void el.offsetWidth;el.classList.add('spin');
+    setTimeout(function(){$('coin').innerHTML=coinSVG(cA>=cG?'A':'G')},520);
+  }else{$('coin').innerHTML=coinSVG(cA>=cG?'A':'G')}
+  updCoin();drawCoinChart();
+}
+$('flip1').addEventListener('click',function(){doFlip(1,true)});
+$('flip10').addEventListener('click',function(){doFlip(10,false)});
+$('flip100').addEventListener('click',function(){doFlip(100,false)});
+$('coinReset').addEventListener('click',function(){cA=0;cG=0;hist=[];updCoin();drawCoinChart();$('coin').innerHTML=coinSVG('A')});
+
+/* ---------- stat game ---------- */
+var data=[],mean,median;
+function fmt(x,d){return x.toFixed(d).replace('.',',')}
+function newData(){
+  data=[];
+  for(var i=0;i<7;i++)data.push(1+Math.floor(Math.random()*10));
+  var sum=data.reduce(function(a,b){return a+b},0);
+  mean=sum/7;
+  median=data.slice().sort(function(a,b){return a-b})[3];
+  $('statData').textContent=data.join(' · ')+'   →   jumlah = '+sum;
+  $('statFb').innerHTML='';
+  drawDots();
+}
+function drawDots(){
+  var s='<line x1="30" y1="118" x2="310" y2="118" stroke="'+FNT+'" stroke-width="2.5" stroke-linecap="round"/>';
+  for(var v=1;v<=10;v++){
+    var x=30+(v-1)*(280/9);
+    s+='<line x1="'+x+'" y1="118" x2="'+x+'" y2="124" stroke="'+FNT+'" stroke-width="2" stroke-linecap="round"/>';
+    s+='<text x="'+x+'" y="141" text-anchor="middle" font-size="10" font-weight="700" fill="'+MUT+'" class="num">'+v+'</text>';
+  }
+  var cnt={};
+  data.forEach(function(v){
+    cnt[v]=(cnt[v]||0)+1;
+    var x=30+(v-1)*(280/9), y=118-17-(cnt[v]-1)*19;
+    s+='<circle cx="'+x+'" cy="'+y+'" r="7.5" fill="'+PURPLE+'" stroke="#fff" stroke-width="2"/>';
+  });
+  $('dotChart').innerHTML=s;
+}
+$('meanSlider').addEventListener('input',function(){$('guessVal').textContent=fmt(parseFloat(this.value),1)});
+$('btnCheck').addEventListener('click',function(){
+  var g=parseFloat($('meanSlider').value), d=Math.abs(g-mean), msg;
+  if(d<0.05)msg='🏆 Tepat sekali! Kamu hebat!';
+  else if(d<0.6)msg='🎉 Hampir tepat!';
+  else if(d<1.5)msg='😊 Lumayan, masih agak meleset.';
+  else msg='🙈 Jauh sekali, coba hitung lagi ya!';
+  var ok=d<0.6;
+  if(ok)boom($('btnCheck'));
+  $('statFb').innerHTML='<div class="fb '+(ok?'ok':'no')+' pop" style="margin:0 0 10px">'+msg+'</div>'+
+    '<div class="expl">💡 Rata-rata = jumlah ÷ banyak = '+data.reduce(function(a,b){return a+b},0)+' ÷ 7 = <b>'+fmt(mean,2)+'</b><br>Median (nilai tengah) = <b>'+fmt(median,1)+'</b> · Selisih tebakanmu: '+fmt(d,1)+'</div>';
+});
+$('btnNewData').addEventListener('click',newData);
+newData();
+
+/* ---------- quiz ---------- */
+var QS=[
+ {q:'Sebuah dadu dilempar sekali. Peluang muncul bilangan genap adalah…',o:['1/6','1/3','1/2','2/3'],a:2,e:'Bilangan genap pada dadu: 2, 4, 6 → 3 dari 6 kemungkinan. Peluang = 3/6 = 1/2.'},
+ {q:'Sebuah koin dilempar 50 kali, gambar muncul 29 kali. Frekuensi relatif gambar adalah…',o:['0,29','0,42','0,58','0,71'],a:2,e:'Frekuensi relatif = frekuensi ÷ banyak percobaan = 29/50 = 0,58.'},
+ {q:'Data: 6, 8, 8, 9, 10, 12. Median data tersebut adalah…',o:['8','8,5','9','10'],a:1,e:'Data sudah urut dan berjumlah genap (6 nilai). Median = rata-rata dua nilai tengah = (8+9)/2 = 8,5.'},
+ {q:'Rata-rata dari 7, 5, 9, 6, 8 adalah…',o:['6','7','8','9'],a:1,e:'Rata-rata = (7+5+9+6+8)/5 = 35/5 = 7.'},
+ {q:'Sebuah kantong berisi 3 kelereng merah dan 5 kelereng biru. Jika diambil satu kelereng secara acak, peluang terambil kelereng merah adalah…',o:['3/5','3/8','5/8','1/3'],a:1,e:'Peluang = banyak merah ÷ total = 3/(3+5) = 3/8.'}
+];
+var qi=0,qscore=0,qanswered=false;
+function renderQ(){
+  qanswered=false;
+  var qc=$('quizCard');
+  if(qi>=QS.length){
+    var emo=qscore===5?'🏆':qscore===4?'🌟':qscore>=3?'🙂':'💪';
+    var msg=qscore===5?'Sempurna! Kamu menguasai materi ini!':qscore===4?'Hebat! Sedikit lagi sempurna!':qscore>=3?'Cukup baik, ulangi konsep yang meleset ya.':'Ayo coba lagi, pelan-pelan saja!';
+    qc.innerHTML='<div style="text-align:center;padding:14px 0">'
+      +'<span class="bigemoji">'+emo+'</span>'
+      +'<p class="lbl" style="margin-bottom:2px">Skor akhir</p>'
+      +'<div class="scorebig num">'+qscore+'/5</div>'
+      +'<p style="color:var(--muted);font-size:14.5px;font-weight:600;margin:12px 0 20px">'+msg+'</p>'
+      +'<button class="btn purpleb" id="btnRetry">🔄 Ulangi kuis</button></div>';
+    if(qscore>=4)confetti(innerWidth/2,120,60);
+    $('btnRetry').addEventListener('click',function(){qi=0;qscore=0;renderQ()});
+    return;
+  }
+  var it=QS[qi];
+  var h='<div class="progress"><div style="width:'+(qi/5*100)+'%"></div></div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+    +'<span class="lbl" style="margin:0">⭐ Soal '+(qi+1)+' dari 5</span>'
+    +'<span class="lbl num" style="margin:0">🏅 skor '+qscore+'</span></div>'
+    +'<p style="font-size:16.5px;font-weight:700;margin:0 0 16px;line-height:1.55">'+it.q+'</p>';
+  it.o.forEach(function(o,i){h+='<button class="qopt" data-i="'+i+'">'+o+'</button>'});
+  h+='<div id="qNext"></div>';
+  qc.innerHTML=h;
+  qc.querySelectorAll('.qopt').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(qanswered)return;
+      qanswered=true;
+      var pick=+b.dataset.i,correct=+it.a;
+      qc.querySelectorAll('.qopt').forEach(function(x){x.disabled=true;if(+x.dataset.i===correct)x.classList.add('ok')});
+      if(pick===correct){qscore++;boom(b)}else{b.classList.add('no')}
+      qc.querySelector('.lbl.num').textContent='🏅 skor '+qscore;
+      $('qNext').innerHTML='<div class="expl">💡 '+it.e+'</div>'
+        +'<button class="btn" id="btnNext" style="width:100%">'+(qi===QS.length-1?'📊 Lihat hasil':'Soal berikutnya ➜')+'</button>';
+      $('btnNext').addEventListener('click',function(){qi++;renderQ()});
+    });
+  });
+}
+renderQ();
+})();
+</script>
+</body>
+</html>
